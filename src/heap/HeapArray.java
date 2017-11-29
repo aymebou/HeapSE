@@ -55,7 +55,10 @@ public class HeapArray<E> implements Heap<E> {
 	
 	//Gets the index of the minimum value of a heap
 	private int getMin() {
-		//The minimum can only be on the last line, we initialize it on the first element on the last line and will compare all. 
+		//Since this function is private and only used on a full heap, we will do as if the Heap is full, 
+		// disregarding other cases, then we know that the minimum can only be on the last line,
+		// we initialize it on the first element on the last line and will compare all.
+		
 		E min = elements.get(capacity/2);
 		int index = capacity/2;
 		for (int i = capacity / 2 ; i < capacity ; i++) {
@@ -63,7 +66,8 @@ public class HeapArray<E> implements Heap<E> {
                 min = elements.get(i);
                 index = i;
              // NB : It seems preferable to access to the element i twice (the if and the affectation) than to store the value, 
-             // because we should only in average get into the if twice, and it should be better than storing a variable all the time.
+             // because we should only in average get into the if only half of the time
+             //, and it should be better than storing a variable all the time.
             }
 		}
 		return index;
@@ -91,11 +95,11 @@ public class HeapArray<E> implements Heap<E> {
 	
 	//The iterator :
     public HeapArrayIterator<E> iterator() {
-        return new HeapArrayIterator<>();
+        return new HeapArrayIterator<E>();
     }
 	
     //Its interface :
-	public class HeapArrayIterator<E> implements Iterator <E> {
+	public class HeapArrayIterator<F> implements Iterator <F> {
 		/*
 		 * This class implements the HeapArray iterator, which allows to get in the HeapArray
 		 * 
@@ -110,14 +114,14 @@ public class HeapArray<E> implements Heap<E> {
 		
 		@Override
 		public boolean hasNext() {
-			return index < size -1;
+			return ((index < size -1) && (elements.get(index+1) != null));
 		}
 
 		@Override
-		public E next() throws IndexOutOfBoundsException {
+		public F next() throws IndexOutOfBoundsException {
 			if (hasNext()) {
 				index++;
-				return (E) elements.get(index);
+				return (F) elements.get(index);
 			}
 			else {
 				throw new IndexOutOfBoundsException ("End reached");
@@ -130,15 +134,18 @@ public class HeapArray<E> implements Heap<E> {
             if (index < 0) {
                 throw new IllegalStateException("Cannot remove before Iterator.next() method is called !");
             }
-            ArrayList temp = new ArrayList(size - index - 1);
-            System.arraycopy(elements, index + 1, temp, 0, size - index - 1);
-            size = index;
-            try {
-				insertArrayList(temp);
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-				System.out.println("Iterator Failure");
-			}
+            else {
+            	List <E> elementsNew = (ArrayList<E>) ((ArrayList<F>) (elements)).clone();
+            	elementsNew.remove(index);
+            	elements.clear();
+            	try {
+					insertArrayList( elementsNew);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            	
+            }
 }
 
 	}
@@ -151,6 +158,7 @@ public class HeapArray<E> implements Heap<E> {
 	public boolean insertElement(E e) {
 
 		if ( this.isFull() && (comparator.compare(e,(E)elements.get(getMin())) <= 0) ){
+			// Notice that the first element of the && is isFull, in case the compare function costs a lot
 			return false;			
 		}
 		else if (!this.isFull()) {
@@ -160,6 +168,7 @@ public class HeapArray<E> implements Heap<E> {
 			return true;
 		}
 		else {
+			//if not full, replace the minimum element by 
 			int index = this.getMin();
 			elements.set(index, e);
 			switchUp(index);

@@ -54,15 +54,19 @@ public class HeapArrayTest {
 		 * 		  remove on a one element list, hasNext to check if empty
 		 * 
 		 * */
-		HeapArray<Integer> testHeap = new HeapArray<>(1, new Comparator<Integer>() {
+		HeapArray<Integer> testHeap = new HeapArray<>(3, new Comparator<Integer>() {
 			public int compare(Integer a, Integer b) { return a-b; }
 								} );
 		HeapArray<Integer>.HeapArrayIterator<Integer> it =   testHeap.iterator();
 		assertFalse(it.hasNext());
+		testHeap.insertElement(11);
 		testHeap.insertElement(12);
-		assertEquals((int)it.next(),12);
-		//it.remove();								// This last test doesn't work, remove function not working.
-		//assertTrue(testHeap.isEmpty());
+		testHeap.insertElement(13);
+		assertEquals((int)it.next(),13);
+		it.next();
+		//it.remove();
+		//assertEquals((int)it.next(),11);								// This last test doesn't work, remove function not working.
+	
 	}
 
 	/**

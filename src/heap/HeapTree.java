@@ -10,7 +10,10 @@ public class HeapTree<E> implements Heap<E> {
 	/*
 	 * This method implements the class Heap but with a tree structure instead of an array structure
 	 * This implementation is much easier to understand because of the structure we are dealing with 
-	 *
+	 * In this way of implementing the Heap, the capacity can vary and is'nt fixed at beginning.
+	 * 
+	 * Class far from being finished, draft only.
+	 * 
 	 * */
 	
 	///////////////////////////////////// ATTRIBUTES AND CONSTRUCTOR //////////////////////////////////
@@ -42,6 +45,13 @@ public class HeapTree<E> implements Heap<E> {
 		return null;
 	}
 	private void switchUp () {
+		if (father == null) {
+			return ;
+		}
+		
+		if (comparator.compare(father.value, this.value) < 0) {
+			E stored = this.value;
+		}
 		
 	}
 
